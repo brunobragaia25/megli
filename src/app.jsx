@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
+import { inject } from '@vercel/analytics';
 
 import { SiteFooter, SiteHeader, SiteSidebar } from './components/SiteShell.jsx';
 import { initDomApp } from './main.js';
@@ -67,6 +68,8 @@ function App() {
     </>
   );
 }
+
+inject();
 
 var container = document.getElementById('root');
 
