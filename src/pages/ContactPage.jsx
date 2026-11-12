@@ -15,25 +15,30 @@ export default function ContactPage() {
     const email = form.querySelector('input[placeholder="E-mail"]').value;
     const imovel = form.querySelector('#contact-imovel').options[form.querySelector('#contact-imovel').selectedIndex].text;
     const mensagem = form.querySelector('textarea').value;
+    const honeypot = form.querySelector('input[name="gd_extra"]').value;
+    const imovelSelecionado = form.querySelector('#contact-imovel').value ? imovel : '';
 
     try {
-      const res = await fetch('/api/contact', {
+      const res = await fetch('https://gestaodevz.vercel.app/api/forms/megli', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          nome,
-          celular,
+          name: nome,
           email,
-          imovel: form.querySelector('#contact-imovel').value ? imovel : '',
-          mensagem,
+          phone: celular,
+          message: mensagem,
+          formType: 'contato',
+          payload: imovelSelecionado ? { imovel: imovelSelecionado } : undefined,
+          pageUrl: window.location.href,
+          website: honeypot,
         }),
       });
-
-      const data = await res.json();
 
       if (res.ok) {
         setMessage('✅ Mensagem enviada com sucesso! Entraremos em contato em breve.');
         form.reset();
+      } else if (res.status === 429) {
+        setMessage('❌ Muitos envios, tente novamente em alguns minutos.');
       } else {
         setMessage('❌ Erro ao enviar a mensagem. Tente novamente.');
       }
@@ -95,6 +100,14 @@ export default function ContactPage() {
                   <figure><img src="/assets/img/contact-img.png" /></figure>
                   <form onSubmit={handleSubmit}>
                       <fieldset>
+                          <input
+                              type="text"
+                              name="gd_extra"
+                              tabIndex={-1}
+                              autoComplete="off"
+                              aria-hidden="true"
+                              style={{ position: 'absolute', left: '-9999px' }}
+                          />
                           <label>
                               <input type="text" placeholder="Nome completo" required />
                           </label>
